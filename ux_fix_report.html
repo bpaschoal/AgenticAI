@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Auditoria UX</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            border-left: 4px solid #764ba2;
+            padding-left: 15px;
+        }
+        .section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            overflow-x: auto;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+        }
+        .timestamp {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Relatório de Auditoria UX - Análise Automática</h1>
+        
+        <h2>🔍 Problemas Identificados (Senior UX Auditor)</h2>
+        <div class="section">
+            <pre>1. **Inconsistent Button Styles**: The website contains inconsistent button styles throughout different sections. For instance, the "Search", "Log In", and "Sign up" buttons are styled differently from the "Check Out" and "Login" buttons in the footer.
+```
+Action: Read website content
+Action Input: {"description": "Input for ScrapeWebsiteTool."}</pre>
+        </div>
+        
+        <h2>✅ Recomendações de Correção (UI/UX Developer)</h2>
+        <div class="section">
+            <pre>**Inconsistent Button Styles Report**
+
+Problem Statement:
+
+The website exhibits inconsistent button styles throughout different sections. Specifically, the "Search", "Log In", and "Sign up" buttons in the top navigation bar have distinct styling compared to the "Check Out" and "Login" buttons in the footer.
+
+Recommended Fixes:
+
+1. **Unify Button Styles:**
+To resolve this issue, we can introduce a consistent button style throughout the website. Here's an example of how we can achieve this:
+```css
+/* Define a global button class */
+.button {
+  background-color: #4CAF50;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Apply the button class to the inconsistent buttons */
+.search-button, .log-in-button, .sign-up-button {
+  @extend(.button);
+}
+
+.check-out-button, .login-button {
+  @extend(.button);
+}
+```
+2. **Define a Button Variants Class:**
+To add some flexibility and variation to our button styles, we can introduce a `.button-variant` class that allows us to modify the style based on its context:
+```css
+.button-variant {
+  &--primary {
+    background-color: #4CAF50;
+  }
+  
+  &--secondary {
+    background-color: #fff;
+    color: #666;
+  }
+}
+```
+3. **Apply Button Variants:**
+We can then apply the `.button-variant` class to our buttons to create variations:
+```html
+<button class="button button-variant--primary">Search</button>
+<button class="button button-variant--secondary">Log In</button>
+<button class="button button-variant--primary">Sign up</button>
+```
+4. **Footer Button Styling:**
+To ensure consistency, we can add the `.button` class to the footer buttons as well:
+```html
+<footer>
+  <button class="button">Check Out</button>
+  <button class="button">Login</button>
+</footer>
+```
+By implementing these fixes, we can achieve a consistent button style throughout the website, enhancing its overall usability and visual appeal.</pre>
+        </div>
+        
+        <div class="timestamp">
+            <p>Relatório gerado em: 24/01/2026 17:57:00</p>
+            <p>Tecnologia: CrewAI + LLM Local (Ollama)</p>
+        </div>
+    </div>
+</body>
+</html>
