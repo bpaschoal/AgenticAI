@@ -8,11 +8,11 @@ AgenticAI is a project designed to study and implement agentic AI systems. It le
 
 ## Features
 
-- 🤖 Local LLM execution using Ollama
-- 📊 Automatic JSON and HTML report generation
-- 🎯 Task-based agent workflows
-- 🏗️ Clean, modular code architecture
-- 📁 Easy-to-extend agent and task definitions
+- Local LLM execution using Ollama
+- Automatic JSON and HTML report generation
+- Task-based agent workflows
+- Clean, modular code architecture
+- Easy-to-extend agent and task definitions
 
 ## Prerequisites
 
@@ -165,7 +165,7 @@ Edit `report.py` to:
 
 ### Ollama Connection Error
 ```
-⚠️ Make sure Ollama is running: ollama serve
+Make sure Ollama is running: ollama serve
 ```
 - Ensure Ollama server is running on port 11434
 - Check connection: `curl http://localhost:11434/api/tags`

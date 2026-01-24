@@ -138,20 +138,20 @@ def save_to_html(data, filename="research_results.html"):
         
         <div class="metadata">
             <div class="metadata-item">
-                <span class="metadata-label">📋 Task:</span>
+                <span class="metadata-label">Task:</span>
                 <span>{data['task']}</span>
             </div>
             <div class="metadata-item">
-                <span class="metadata-label">🧠 Model:</span>
+                <span class="metadata-label">Model:</span>
                 <span>{data['model']}</span>
             </div>
             <div class="metadata-item">
-                <span class="metadata-label">⏰ Generated:</span>
+                <span class="metadata-label">Generated:</span>
                 <span>{data['timestamp']}</span>
             </div>
             <div class="metadata-item">
-                <span class="metadata-label">⚙️ Status:</span>
-                <span style="color: green; font-weight: bold;">✅ Success</span>
+                <span class="metadata-label">Status:</span>
+                <span style="color: green; font-weight: bold;">Success</span>
             </div>
         </div>
         
