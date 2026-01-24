@@ -16,9 +16,23 @@ AgenticAI is a project designed to study and implement agentic AI systems. It le
 
 ## Prerequisites
 
-- Python 3.8+
+- Python 3.8+ (Check with: `python --version`)
 - Ollama (installed via official script or package manager)
-- pip or conda
+- pip (Python package manager)
+
+### Checking Your Python Installation
+
+```bash
+# Check Python version
+python --version  # Should be 3.8 or higher
+
+# Check pip
+pip --version
+
+# If using global installation, verify pip points to correct Python:
+which python
+which pip
+```
 
 ## Installation
 
@@ -34,15 +48,44 @@ Download the Ollama app from [ollama.ai](https://ollama.ai)
 
 ### 2. Install Python Dependencies
 
+#### Option A: Using Virtual Environment (Recommended)
 ```bash
 cd /workspaces/AgenticAI
-pip install ollama litellm python-dotenv
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
-The following packages will be installed:
-- **ollama** - Python client for Ollama
-- **litellm** - LLM interface library
+#### Option B: Global Installation (Without venv)
+If you prefer to install dependencies globally, run:
+
+```bash
+# Core dependencies for agentic.py
+pip install crewai crewai-tools litellm python-dotenv
+
+# Additional dependencies (installed automatically with crewai)
+pip install openai pydantic aiohttp beautifulsoup4
+```
+
+**All Required Packages:**
+- **crewai** - Agent framework for building AI crews
+- **crewai-tools** - Tools for agents (web scraping, etc.)
+- **litellm** - LLM interface library (supports Ollama, OpenAI, etc.)
+- **openai** - OpenAI Python client (required by crewai)
 - **python-dotenv** - Environment variable management
+- **pydantic** - Data validation using Python type hints
+- **aiohttp** - Async HTTP client
+- **beautifulsoup4** - HTML/XML parsing
+- **requests** - HTTP library
+- **tiktoken** - Token counting library
+- **instructor** - Structured data extraction from LLMs
+- **chromadb** - Vector database for embeddings
+- **pyfunctional** - Functional programming utilities
+
+**Quick install without venv:**
+```bash
+pip install crewai crewai-tools litellm openai python-dotenv
+```
 
 ## Quick Start
 
@@ -79,10 +122,13 @@ This will:
 
 ```
 AgenticAI/
-├── agentic.py              # Main agent implementation
+├── agentic.py              # Tech researcher agent
+├── study.py                # UX auditor agent (uses CrewAI)
 ├── report.py               # Report generation module
-├── research_results.json   # Generated JSON report
-├── research_results.html   # Generated HTML report
+├── research_results.json   # Generated JSON report (agentic.py)
+├── research_results.html   # Generated HTML report (agentic.py)
+├── ux_fix_report.html      # Generated UX audit report (study.py)
+├── .gitignore              # Git ignore rules
 ├── README.md               # Project documentation
 └── .git/                   # Git repository
 ```
@@ -90,11 +136,34 @@ AgenticAI/
 ## File Descriptions
 
 ### agentic.py
-Main agent implementation that:
+Initial agent implementation that:
 - Initializes the Ollama connection
 - Defines the research task
 - Generates AI responses
 - Orchestrates report generation
+- Outputs: `research_results.json` and `research_results.html`
+
+**Run with:**
+```bash
+python agentic.py
+```
+
+### study.py
+Advanced multi-agent system using **CrewAI**:
+- **Senior UX Auditor Agent** - Analyzes website usability issues
+- **UI/UX Developer Agent** - Provides HTML/CSS fixes for identified issues
+- Creates interactive crew workflows
+- Outputs: `ux_fix_report.html`
+
+**Run with:**
+```bash
+python study.py
+```
+
+**Requires CrewAI installation:**
+```bash
+pip install crewai crewai-tools
+```
 
 ### report.py
 Report generation module with utilities for:
@@ -163,12 +232,43 @@ Edit `report.py` to:
 
 ## Troubleshooting
 
+### Import Module Not Found When Using Global Installation
+
+If you see errors like `ModuleNotFoundError: No module named 'crewai'`:
+
+```bash
+# Verify the module is installed
+pip list | grep crewai
+
+# Reinstall if needed
+pip install --upgrade crewai crewai-tools
+
+# Check which Python your script uses
+python -c "import sys; print(sys.executable)"
+
+# Run script with explicit Python path
+/usr/local/python/3.12.1/bin/python study.py
+```
+
+### Python Version Mismatch
+
+If you have multiple Python versions, ensure pip installs to the correct one:
+
+```bash
+# Install to Python 3.12 specifically
+python3.12 -m pip install crewai crewai-tools
+
+# Run with same Python version
+python3.12 study.py
+```
+
 ### Ollama Connection Error
 ```
 Make sure Ollama is running: ollama serve
 ```
 - Ensure Ollama server is running on port 11434
 - Check connection: `curl http://localhost:11434/api/tags`
+- Verify model is installed: `ollama list`
 
 ### Model Not Found
 ```bash
