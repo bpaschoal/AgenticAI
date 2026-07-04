@@ -92,6 +92,32 @@ two models here). A GPU helps a lot with speed, but is not required.
 
 ---
 
+## Quick start with `run.sh` (Linux/macOS)
+
+If you'd rather not run each step by hand, the repo ships a `run.sh` that automates
+**steps 3 to 6** — virtual environment, Python dependencies, Chromium, pulling the
+models, starting the Ollama server (only if it isn't already up), and finally
+running `main.py`:
+
+```bash
+./run.sh          # sets up (if needed) and runs
+./run.sh setup    # only prepares the environment, without running
+```
+
+> ⚠️ **`run.sh` does NOT install Python or Ollama for you** (steps 1 and 2 below).
+> Installing Ollama downloads and runs a system-level script as root, so it's left
+> as a deliberate one-time step you do yourself. The script only *checks* whether
+> Ollama is present — if it isn't, it stops and prints the install command. So:
+> do steps 1 and 2 once, then `run.sh` handles the rest.
+
+The script is idempotent (re-running won't recreate the venv or re-pull existing
+models) and honors `OLLAMA_VISION_MODEL`, e.g. `OLLAMA_VISION_MODEL=llama3.2-vision ./run.sh`.
+
+On **Windows**, follow the manual steps below (the script is bash-only; it works on
+Windows through WSL2).
+
+---
+
 ## 1. Install Python 3.10+
 
 ### Linux
