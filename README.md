@@ -1,8 +1,72 @@
-# Agentic project (CrewAI + Ollama)
+# Agentes de IA com Orquestrador (CrewAI + Ollama)
 
-Sistema de navegação visual web com um orchestrator (CrewAI em modo hierárquico).
-O raciocínio/roteamento roda localmente via Ollama; o agente de navegação visual
-usa Claude só na etapa de visão.
+## O que é um Agente de IA?
+
+Um agente de IA é um sistema que usa um modelo de linguagem (LLM) não apenas para responder perguntas, mas para **tomar decisões e executar ações** de forma autônoma. Diferente de um chatbot comum, um agente pode:
+
+- Analisar um objetivo e planejar os passos para alcançá-lo
+- Chamar ferramentas externas (APIs, bancos de dados, buscas, código)
+- Avaliar os resultados e decidir o próximo passo
+- Repetir esse ciclo até resolver a tarefa
+
+Em resumo: o agente raciocina, age, observa o resultado e ajusta a rota.
+
+## Por que "orquestrador"?
+
+Quando uma tarefa é complexa, um único agente fazendo tudo sozinho tende a ficar confuso, lento ou ineficiente. É aí que entra o **orquestrador**: um agente "coordenador" que não executa o trabalho pesado diretamente, mas decide **quem faz o quê**.
+
+Pense nele como um maestro: não toca nenhum instrumento, mas garante que cada músico (agente especializado) entre na hora certa.
+
+### Como funciona na prática
+
+```
+Usuário → Orquestrador → decide qual(is) agente(s) acionar
+                 ├── Agente de Pesquisa
+                 ├── Agente de Código
+                 ├── Agente de Dados
+                 └── Agente de Escrita
+          ← Orquestrador junta os resultados e responde
+```
+
+O orquestrador é responsável por:
+
+1. **Interpretar** a solicitação do usuário
+2. **Dividir** a tarefa em subtarefas menores
+3. **Delegar** cada subtarefa ao agente especializado mais adequado
+4. **Consolidar** as respostas em um resultado coerente
+
+## Quando vale a pena usar essa arquitetura?
+
+| Cenário | Agente único | Orquestrador + subagentes |
+|---|---|---|
+| Tarefa simples e direta | ✅ Ideal | Desnecessário |
+| Tarefa com múltiplas etapas distintas | ⚠️ Pode confundir | ✅ Ideal |
+| Necessidade de especialização (ex: código + pesquisa + dados) | ❌ Limitado | ✅ Ideal |
+| Precisa de paralelismo | ❌ Sequencial | ✅ Pode rodar em paralelo |
+
+## Componentes típicos
+
+- **LLM** — o "cérebro" que raciocina e decide
+- **Ferramentas (tools)** — funções que o agente pode chamar (busca, cálculo, APIs)
+- **Memória** — contexto do que já foi feito na conversa/tarefa
+- **Orquestrador** — camada de controle que gerencia múltiplos agentes/ferramentas
+- **Subagentes** — agentes especializados em uma função específica
+
+---
+
+## Sobre este projeto
+
+Este repositório é uma implementação concreta dessa arquitetura: um sistema de
+**navegação visual web** com um orquestrador em CrewAI rodando em modo
+hierárquico.
+
+- O **raciocínio/roteamento** roda localmente via **Ollama** (sem custo de API).
+- O **agente de navegação visual** usa **Claude (Anthropic)** apenas na etapa de
+  visão — decidir onde clicar a partir de um screenshot.
+
+Ou seja, o orquestrador do CrewAI recebe a tarefa, decide quando acionar o
+`agente_navegador` e consolida o resultado, exatamente como descrito na seção
+conceitual acima.
 
 ## 1. Pré-requisitos
 
