@@ -1,80 +1,121 @@
-# Agentes de IA com Orquestrador (CrewAI + Ollama)
+# AI Agents with an Orchestrator (CrewAI + Ollama)
 
-## O que é um Agente de IA?
+## What is an AI Agent?
 
-Um agente de IA é um sistema que usa um modelo de linguagem (LLM) não apenas para responder perguntas, mas para **tomar decisões e executar ações** de forma autônoma. Diferente de um chatbot comum, um agente pode:
+An AI agent is a system that uses a language model (LLM) not just to answer questions, but to **make decisions and take actions** autonomously. Unlike a regular chatbot, an agent can:
 
-- Analisar um objetivo e planejar os passos para alcançá-lo
-- Chamar ferramentas externas (APIs, bancos de dados, buscas, código)
-- Avaliar os resultados e decidir o próximo passo
-- Repetir esse ciclo até resolver a tarefa
+- Analyze a goal and plan the steps to reach it
+- Call external tools (APIs, databases, searches, code)
+- Evaluate the results and decide the next step
+- Repeat this cycle until the task is solved
 
-Em resumo: o agente raciocina, age, observa o resultado e ajusta a rota.
+In short: the agent reasons, acts, observes the result, and adjusts course.
 
-## Por que "orquestrador"?
+## Why an "orchestrator"?
 
-Quando uma tarefa é complexa, um único agente fazendo tudo sozinho tende a ficar confuso, lento ou ineficiente. É aí que entra o **orquestrador**: um agente "coordenador" que não executa o trabalho pesado diretamente, mas decide **quem faz o quê**.
+When a task is complex, a single agent doing everything on its own tends to get confused, slow, or inefficient. That's where the **orchestrator** comes in: a "coordinator" agent that doesn't do the heavy lifting directly, but decides **who does what**.
 
-Pense nele como um maestro: não toca nenhum instrumento, mas garante que cada músico (agente especializado) entre na hora certa.
+Think of it as a conductor: it doesn't play any instrument, but it makes sure each musician (specialized agent) comes in at the right time.
 
-### Como funciona na prática
+### How it works in practice
 
 ```
-Usuário → Orquestrador → decide qual(is) agente(s) acionar
-                 ├── Agente de Pesquisa
-                 ├── Agente de Código
-                 ├── Agente de Dados
-                 └── Agente de Escrita
-          ← Orquestrador junta os resultados e responde
+User → Orchestrator → decides which agent(s) to trigger
+                ├── Research Agent
+                ├── Coding Agent
+                ├── Data Agent
+                └── Writing Agent
+         ← Orchestrator gathers the results and responds
 ```
 
-O orquestrador é responsável por:
+The orchestrator is responsible for:
 
-1. **Interpretar** a solicitação do usuário
-2. **Dividir** a tarefa em subtarefas menores
-3. **Delegar** cada subtarefa ao agente especializado mais adequado
-4. **Consolidar** as respostas em um resultado coerente
+1. **Interpreting** the user's request
+2. **Breaking** the task into smaller subtasks
+3. **Delegating** each subtask to the most suitable specialized agent
+4. **Consolidating** the responses into a coherent result
 
-## Quando vale a pena usar essa arquitetura?
+## When is this architecture worth it?
 
-| Cenário | Agente único | Orquestrador + subagentes |
+| Scenario | Single agent | Orchestrator + subagents |
 |---|---|---|
-| Tarefa simples e direta | ✅ Ideal | Desnecessário |
-| Tarefa com múltiplas etapas distintas | ⚠️ Pode confundir | ✅ Ideal |
-| Necessidade de especialização (ex: código + pesquisa + dados) | ❌ Limitado | ✅ Ideal |
-| Precisa de paralelismo | ❌ Sequencial | ✅ Pode rodar em paralelo |
+| Simple, direct task | ✅ Ideal | Unnecessary |
+| Task with multiple distinct steps | ⚠️ May get confused | ✅ Ideal |
+| Needs specialization (e.g. code + research + data) | ❌ Limited | ✅ Ideal |
+| Needs parallelism | ❌ Sequential | ✅ Can run in parallel |
 
-## Componentes típicos
+## Typical components
 
-- **LLM** — o "cérebro" que raciocina e decide
-- **Ferramentas (tools)** — funções que o agente pode chamar (busca, cálculo, APIs)
-- **Memória** — contexto do que já foi feito na conversa/tarefa
-- **Orquestrador** — camada de controle que gerencia múltiplos agentes/ferramentas
-- **Subagentes** — agentes especializados em uma função específica
+- **LLM** — the "brain" that reasons and decides
+- **Tools** — functions the agent can call (search, math, APIs)
+- **Memory** — context of what has already been done in the conversation/task
+- **Orchestrator** — control layer that manages multiple agents/tools
+- **Subagents** — agents specialized in a specific function
 
 ---
 
-## Sobre este projeto
+## About this project
 
-Este repositório é uma implementação concreta dessa arquitetura: um sistema de
-**navegação visual web** com um orquestrador em CrewAI rodando em modo
-hierárquico.
+This repository is a concrete implementation of that architecture: a **visual web
+navigation** system with an orchestrator in CrewAI running in hierarchical mode.
 
-- O **raciocínio/roteamento** roda localmente via **Ollama** (sem custo de API).
-- O **agente de navegação visual** usa **Claude (Anthropic)** apenas na etapa de
-  visão — decidir onde clicar a partir de um screenshot.
+**Everything runs locally — nothing leaves your machine.** There is no API key and
+no usage cost:
 
-Ou seja, o orquestrador do CrewAI recebe a tarefa, decide quando acionar o
-`agente_navegador` e consolida o resultado, exatamente como descrito na seção
-conceitual acima.
+- The **reasoning/routing** (the CrewAI "manager") runs via **Ollama** with the
+  `llama3.1` model.
+- The **visual navigation agent** also runs on **Ollama**, with a vision model
+  (`qwen2.5vl`) that looks at the screenshot and decides the next click.
 
-## 1. Pré-requisitos
+In other words, the CrewAI orchestrator receives the task, decides when to trigger
+the navigation agent, and consolidates the result — exactly as described in the
+conceptual section above.
 
-- Python 3.10 ou superior
-- ~8 GB de RAM livres no mínimo (modelos de 8B parâmetros), 16 GB+ recomendado
-- Espaço em disco: 5-10 GB por modelo baixado no Ollama
+---
 
-## 2. Instalar o Ollama
+# Installation
+
+## Summary — what needs to be installed
+
+| # | Item | What for |
+|---|---|---|
+| 1 | **Python 3.10+** | Runs the project |
+| 2 | **Ollama** | Runtime that serves the models locally |
+| 3 | Model **`llama3.1`** (via Ollama) | Reasoning/routing (CrewAI manager) |
+| 4 | Model **`qwen2.5vl`** (via Ollama) | Vision: decides the clicks in the navigation loop |
+| 5 | **Python dependencies** (`crewai`, `crewai-tools`, `playwright`, `ollama`) | Project libraries |
+| 6 | **Chromium browser** (via Playwright) | Browser the agent controls |
+
+**Hardware requirements:** ~8 GB of free RAM minimum (~8B-parameter models),
+16 GB+ recommended. Reserve 5-10 GB of disk per model pulled in Ollama (there are
+two models here). A GPU helps a lot with speed, but is not required.
+
+---
+
+## 1. Install Python 3.10+
+
+### Linux
+On most distributions Python is already installed. Check the version:
+```bash
+python3 --version
+```
+If it's lower than 3.10 (or missing), install it (Debian/Ubuntu):
+```bash
+sudo apt update && sudo apt install python3 python3-venv python3-pip
+```
+
+### Windows
+Download the installer from https://www.python.org/downloads/ and, **on the first
+installer screen, check the "Add Python to PATH" box**. Then verify in PowerShell:
+```powershell
+python --version
+```
+
+---
+
+## 2. Install Ollama
+
+Ollama runs as a background service, exposing an API at `http://localhost:11434`.
 
 ### Linux
 ```bash
@@ -82,86 +123,125 @@ curl -fsSL https://ollama.com/install.sh | sh
 ```
 
 ### Windows
-Baixe o instalador em https://ollama.com/download (roda melhor via WSL2, se disponível).
+Download and run the installer from https://ollama.com/download
+(it also works via WSL2, using the Linux instructions above).
 
-### Verificar se está rodando
-O Ollama roda como serviço em background, expondo uma API em `http://localhost:11434`.
+### Check that it's running (Linux and Windows)
 ```bash
 ollama --version
 ```
-Se o serviço não subir sozinho, inicie manualmente:
+If the service doesn't start on its own, start it manually in a separate terminal:
 ```bash
 ollama serve
 ```
 
-### Baixar o modelo usado no projeto
+---
+
+## 3. Pull the models used by the project
+
+There are **two** models. With Ollama installed, run (same on Linux and Windows):
 ```bash
-ollama pull llama3.1
-```
-Outras opções válidas: `llama3.2` (mais leve, roda em menos RAM) ou `mistral`.
-Pra trocar o modelo, basta editar a string em `main.py`:
-```python
-llm_local = LLM(model="ollama/llama3.1", base_url="http://localhost:11434")
+ollama pull llama3.1      # reasoning/routing (CrewAI manager)
+ollama pull qwen2.5vl     # vision (decides the clicks in navigation)
 ```
 
-## 3. Configurar o ambiente Python
+- **Change the reasoning model:** edit the string in `main.py`
+  (`llama3.2` is lighter; `mistral` also works):
+  ```python
+  llm_local = LLM(model="ollama/llama3.1", base_url="http://localhost:11434")
+  ```
+- **Change the vision model:** set the `OLLAMA_VISION_MODEL` environment variable
+  (the default is `qwen2.5vl`). For click-coordinate grounding, `qwen2.5vl` is
+  usually much better than `llama3.2-vision`.
 
-Crie e ative um ambiente virtual:
+---
+
+## 4. Set up the Python environment and install the dependencies
+
+First create and activate a virtual environment (in the project folder):
+
+### Linux / macOS
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate        # Linux/macOS
-.venv\Scripts\activate           # Windows
+source .venv/bin/activate
 ```
 
-Instale as dependências:
+### Windows (PowerShell)
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+> If PowerShell blocks the activation script, run once:
+> `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` and activate again.
+> On the classic Command Prompt (cmd), use: `.venv\Scripts\activate.bat`
+
+With the environment activated (the prompt shows `(.venv)`), install the
+dependencies (same on both systems):
 ```bash
 pip install -r requirements.txt
 ```
 
-Instale o navegador usado pelo Playwright (necessário para o agente de navegação):
+---
+
+## 5. Install the Playwright browser
+
+The navigation agent controls a Chromium via Playwright. Install it (same on Linux
+and Windows, with `.venv` activated):
 ```bash
 playwright install chromium
 ```
-
-## 4. Configurar a chave da Anthropic (só para o agente de navegação visual)
-
-O `navegador_visual_engine.py` usa a API da Anthropic para a parte de visão
-(decidir onde clicar a partir do screenshot). Exporte sua chave como variável
-de ambiente:
+On Linux, if system libraries are missing, Playwright helps install them:
 ```bash
-export ANTHROPIC_API_KEY="sua-chave-aqui"     # Linux/macOS
-setx ANTHROPIC_API_KEY "sua-chave-aqui"       # Windows
-```
-Se você não for usar o agente de navegação visual, pode remover essa
-dependência e o arquivo correspondente sem afetar o resto do projeto.
-
-## 5. Rodar o projeto
-
-Com o Ollama rodando (`ollama serve`) e o ambiente virtual ativado:
-```bash
-python main.py
+playwright install-deps chromium     # (may require sudo)
 ```
 
-O `Crew` vai executar o agente de navegação visual (`agente_navegador`) para
-interagir com websites conforme a tarefa descrita em `main.py`.
+---
 
-## 6. Adicionando um novo agente
+## 6. Run the project
 
-1. Crie `agentes/novo_agente.py` com uma função `criar_agente_novo(llm) -> Agent`.
-2. Se ele precisar de uma ação nova, crie a tool em `ferramentas/` com `@tool`.
-3. Registre a importação em `agentes/__init__.py`.
-4. No `main.py`, instancie e adicione à lista `agents=[...]` do `Crew`.
+Make sure Ollama is running (`ollama serve`) and `.venv` is activated. Then:
+```bash
+python main.py          # Windows
+python3 main.py         # Linux/macOS
+```
 
-Nenhum outro arquivo precisa mudar — o manager do CrewAI descobre o novo
-agente automaticamente pela lista e decide quando delegar pra ele com base
-no `role`/`goal`/`backstory` que você escrever.
+The `Crew` will run the visual navigation agent to interact with websites according
+to the task described in `main.py`.
 
-## Solução de problemas
+### Optional environment variables
 
-| Sintoma | Causa provável |
+| Variable | Default | What for |
+|---|---|---|
+| `OLLAMA_VISION_MODEL` | `qwen2.5vl` | Chooses the navigation vision model |
+| `OLLAMA_HOST` | `http://localhost:11434` | Ollama server address |
+
+To set them (example with the vision model):
+```bash
+export OLLAMA_VISION_MODEL="qwen2.5vl"     # Linux/macOS
+setx OLLAMA_VISION_MODEL "qwen2.5vl"       # Windows (applies from the next terminal on)
+```
+
+---
+
+## 7. Adding a new agent
+
+1. Create `Agents/new_agent.py` with a function `create_new_agent(llm) -> Agent`.
+2. If it needs a new action, create the tool in `Tools/` with `@tool`.
+3. Register the import in `Agents/__init__.py`.
+4. In `main.py`, instantiate it and add it to the `Crew`'s `agents=[...]` list.
+
+No other file needs to change — the CrewAI manager discovers the new agent
+automatically from the list and decides when to delegate to it based on the
+`role`/`goal`/`backstory` you write.
+
+## Troubleshooting
+
+| Symptom | Likely cause |
 |---|---|
-| `Connection refused` na porta 11434 | Ollama não está rodando — rode `ollama serve` |
-| Respostas muito lentas ou travando | Modelo grande demais para a RAM/GPU disponível — tente `llama3.2` |
-| Erro de tool calling não suportado | Nem todo modelo do Ollama suporta tool use — confira a página do modelo em ollama.com/library |
-| Navegador não abre (agente de navegação) | Rode `playwright install chromium` novamente |
-| Erro de autenticação da Anthropic | Confira se `ANTHROPIC_API_KEY` está exportada na sessão atual do terminal |
+| `Connection refused` on port 11434 | Ollama isn't running — run `ollama serve` |
+| `model not found` | Model wasn't pulled — run `ollama pull llama3.1` and `ollama pull qwen2.5vl` |
+| Very slow or hanging responses | Model too big for the available RAM/GPU — try `llama3.2` |
+| Tool-calling not supported error | Not every Ollama model supports tool use — check the model page at ollama.com/library |
+| Inaccurate clicks in navigation | Weak vision model — prefer `qwen2.5vl` via `OLLAMA_VISION_MODEL` |
+| Browser doesn't open (navigation agent) | Run `playwright install chromium` again (and `playwright install-deps chromium` on Linux) |
+| `command not found: playwright` / `pip` | The `.venv` isn't activated — activate it before running |
