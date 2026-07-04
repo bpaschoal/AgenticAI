@@ -62,8 +62,9 @@ navigation** system with an orchestrator in CrewAI running in hierarchical mode.
 **Everything runs locally — nothing leaves your machine.** There is no API key and
 no usage cost:
 
-- The **reasoning/routing** (the CrewAI "manager") runs via **Ollama** with the
-  `llama3.1` model.
+- The **reasoning/routing** (the CrewAI "manager") runs via **Ollama** with a
+  lightweight `llama3.2:3b` model (~2 GB) by default, so it fits on machines with
+  little free RAM. You can point it at a bigger model with `OLLAMA_ROUTER_MODEL`.
 - The **visual navigation agent** also runs on **Ollama**, with a vision model
   (`qwen2.5vl`) that looks at the screenshot and decides the next click.
 
@@ -81,14 +82,21 @@ conceptual section above.
 |---|---|---|
 | 1 | **Python 3.10+** | Runs the project |
 | 2 | **Ollama** | Runtime that serves the models locally |
-| 3 | Model **`llama3.1`** (via Ollama) | Reasoning/routing (CrewAI manager) |
+| 3 | Model **`llama3.2:3b`** (via Ollama) | Reasoning/routing (CrewAI manager) — light default |
 | 4 | Model **`qwen2.5vl`** (via Ollama) | Vision: decides the clicks in the navigation loop |
 | 5 | **Python dependencies** (`crewai`, `crewai-tools`, `playwright`, `ollama`) | Project libraries |
 | 6 | **Chromium browser** (via Playwright) | Browser the agent controls |
 
-**Hardware requirements:** ~8 GB of free RAM minimum (~8B-parameter models),
-16 GB+ recommended. Reserve 5-10 GB of disk per model pulled in Ollama (there are
-two models here). A GPU helps a lot with speed, but is not required.
+**Hardware requirements:** with the light defaults (`llama3.2:3b` for routing +
+`qwen2.5vl` for vision) it runs on **~8 GB of RAM**; 16 GB+ recommended and lets
+you switch the router to a bigger model via `OLLAMA_ROUTER_MODEL` (e.g. `llama3.1`).
+Reserve ~2 GB of disk for the router model and ~6 GB for the vision model in Ollama.
+A GPU helps a lot with speed, but is not required.
+
+> 💡 **Tight on RAM?** Ollama keeps only one model resident at a time and swaps as
+> needed, but the vision model (`qwen2.5vl`, ~6 GB) is the heavy one — keep other
+> apps closed while the navigation loop runs. Don't leave unused models pulled:
+> `ollama rm <model>` frees the disk (and avoids accidentally loading a big one).
 
 ---
 
@@ -111,7 +119,8 @@ running `main.py`:
 > do steps 1 and 2 once, then `run.sh` handles the rest.
 
 The script is idempotent (re-running won't recreate the venv or re-pull existing
-models) and honors `OLLAMA_VISION_MODEL`, e.g. `OLLAMA_VISION_MODEL=llama3.2-vision ./run.sh`.
+models) and honors both `OLLAMA_ROUTER_MODEL` and `OLLAMA_VISION_MODEL`, e.g.
+`OLLAMA_ROUTER_MODEL=llama3.1 ./run.sh` or `OLLAMA_VISION_MODEL=llama3.2-vision ./run.sh`.
 
 On **Windows**, follow the manual steps below (the script is bash-only; it works on
 Windows through WSL2).
@@ -167,14 +176,15 @@ ollama serve
 
 There are **two** models. With Ollama installed, run (same on Linux and Windows):
 ```bash
-ollama pull llama3.1      # reasoning/routing (CrewAI manager)
+ollama pull llama3.2:3b   # reasoning/routing (CrewAI manager) — light default
 ollama pull qwen2.5vl     # vision (decides the clicks in navigation)
 ```
 
-- **Change the reasoning model:** edit the string in `main.py`
-  (`llama3.2` is lighter; `mistral` also works):
-  ```python
-  llm_local = LLM(model="ollama/llama3.1", base_url="http://localhost:11434")
+- **Change the reasoning model:** set the `OLLAMA_ROUTER_MODEL` environment
+  variable (the default is `ollama/llama3.2:3b`, a small ~2 GB model). With more
+  RAM, `ollama/llama3.1` or `ollama/mistral` reason better:
+  ```bash
+  export OLLAMA_ROUTER_MODEL="ollama/llama3.1"   # remember to pull it first
   ```
 - **Change the vision model:** set the `OLLAMA_VISION_MODEL` environment variable
   (the default is `qwen2.5vl`). For click-coordinate grounding, `qwen2.5vl` is
@@ -238,6 +248,7 @@ to the task described in `main.py`.
 
 | Variable | Default | What for |
 |---|---|---|
+| `OLLAMA_ROUTER_MODEL` | `ollama/llama3.2:3b` | Reasoning/routing model (CrewAI manager) |
 | `OLLAMA_VISION_MODEL` | `qwen2.5vl` | Chooses the navigation vision model |
 | `OLLAMA_HOST` | `http://localhost:11434` | Ollama server address |
 
@@ -265,8 +276,8 @@ automatically from the list and decides when to delegate to it based on the
 | Symptom | Likely cause |
 |---|---|
 | `Connection refused` on port 11434 | Ollama isn't running — run `ollama serve` |
-| `model not found` | Model wasn't pulled — run `ollama pull llama3.1` and `ollama pull qwen2.5vl` |
-| Very slow or hanging responses | Model too big for the available RAM/GPU — try `llama3.2` |
+| `model not found` | Model wasn't pulled — run `ollama pull llama3.2:3b` and `ollama pull qwen2.5vl` |
+| Very slow or hanging responses / out of memory | Model too big for the available RAM/GPU — stick to the light `llama3.2:3b` router and close other apps; `ollama rm` unused models |
 | Tool-calling not supported error | Not every Ollama model supports tool use — check the model page at ollama.com/library |
 | Inaccurate clicks in navigation | Weak vision model — prefer `qwen2.5vl` via `OLLAMA_VISION_MODEL` |
 | Browser doesn't open (navigation agent) | Run `playwright install chromium` again (and `playwright install-deps chromium` on Linux) |

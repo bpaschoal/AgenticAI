@@ -1,43 +1,48 @@
 """
-Aqui o orchestrator não é mais um arquivo nosso -- é o próprio CrewAI rodando
-em Process.hierarchical. Nesse modo, o CrewAI cria automaticamente um agente
-"manager" que lê a tarefa, decide para qual agente delegar (com base no role/
-goal/backstory de cada um) e agrega o resultado. É exatamente o papel que o
-orchestrator.py fazia na mão antes.
+Here the orchestrator is no longer a file of ours -- it's CrewAI itself running
+in Process.hierarchical. In this mode, CrewAI automatically creates a "manager"
+agent that reads the task, decides which agent to delegate to (based on each
+one's role/goal/backstory) and aggregates the result. It's exactly the role that
+orchestrator.py used to play by hand before.
 
-Pré-requisitos (tudo local, nada sai da máquina):
+Prerequisites (everything local, nothing leaves your machine):
     pip install crewai 'crewai[tools]' playwright ollama
     playwright install chromium
-    ollama pull llama3.1        # raciocina/roteia (o "manager" do CrewAI)
-    ollama pull qwen2.5vl       # visão: decide os cliques no loop de navegação
-    ollama serve                # garanta que está rodando em localhost:11434
+    ollama pull llama3.2:3b     # reasons/routes (the CrewAI "manager") -- light
+    ollama pull qwen2.5vl       # vision: decides the clicks in the navigation loop
+    ollama serve                # make sure it's running on localhost:11434
 """
+
+import os
 
 from crewai import Task, Crew, Process, LLM
 from Agents import create_visual_navigation_agent
 
-# LLM local via Ollama -- é ele quem raciocina e decide o roteamento
-llm_local = LLM(model="ollama/llama3.1", base_url="http://localhost:11434")
+# Local LLM via Ollama -- it's the one that reasons and decides the routing.
+# Default is a small model (~2.5 GB) that runs on machines with little RAM;
+# switch it via OLLAMA_ROUTER_MODEL (e.g. "ollama/llama3.1" if you have >=8 GB free).
+router_model = os.environ.get("OLLAMA_ROUTER_MODEL", "ollama/llama3.2:3b")
+llm_local = LLM(model=router_model, base_url="http://localhost:11434")
 
-agente_navegador = create_visual_navigation_agent(llm_local)
-# agente_novo = criar_agente_novo(llm_local)   <- é só isso pra adicionar mais um
+nav_agent = create_visual_navigation_agent(llm_local)
+# new_agent = create_new_agent(llm_local)   <- that's all it takes to add one more
 
-tarefa = Task(
+task = Task(
     description=(
-        "Vá até example.com e diga qual é o texto do link que aparece na página."
+        "Go to example.com and tell me the text of the link shown on the page."
     ),
-    expected_output="Uma resposta direta e objetiva sobre o que foi pedido.",
-    # sem `agent=` fixo: o manager decide quem executa, em runtime
+    expected_output="A direct, objective answer about what was asked.",
+    # no fixed `agent=`: the manager decides who runs it, at runtime
 )
 
 crew = Crew(
-    agents=[agente_navegador],
-    tasks=[tarefa],
+    agents=[nav_agent],
+    tasks=[task],
     process=Process.hierarchical,
     manager_llm=llm_local,
     verbose=True,
 )
 
 if __name__ == "__main__":
-    resultado = crew.kickoff()
-    print("\nResposta final:", resultado)
+    result = crew.kickoff()
+    print("\nFinal answer:", result)
