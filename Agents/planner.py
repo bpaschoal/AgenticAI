@@ -17,5 +17,5 @@ class Planner:
             href, text = href_match.group(1), re.sub(r"<[^>]+>", "", href_match.group(2)).strip()
             return [{"action": "open_url", "url": href}, {"action": "task_completed", "result": text or href}]
 
-        # fallback: no-op and ask executor to return the current DOM for inspection
+        # No explicit action found; request current DOM for inspection
         return [{"action": "inspect_dom"}]
